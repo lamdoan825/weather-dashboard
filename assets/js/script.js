@@ -10,8 +10,8 @@ function begin() {
 	const cityEl = document.getElementById("enter-city");
 	const searchEl = document.getElementById("search-button");
 	const clearEl = document.getElementById("clear-history");
-	var dayEl = document.getElementById("fiveday-header");
-	var todayweatherEl = document.getElementById("today-weather");
+	let dayEl = document.getElementById("fiveday-header");
+	let todayweatherEl = document.getElementById("today-weather");
 	let searchHistory = JSON.parse(localStorage.getItem("search")) || [];
 
 	// Assigning API to a variable
@@ -60,8 +60,30 @@ function begin() {
 							currentUVEl.append(UVIndex);
 						});		
 					// Get 5 day forecast for this city
+					let cityID = response.data.id;
+					let forecastQueryURL = "https://api.openweathermap.org/data/2.5/forecast?id=" + cityID + "&appid=" + APIKey;
+					axios.get(forecastQueryURL)
+						.then(function (response) {
+							dayEl.classList.remove("d-none");
+							
+							//  Parse response to display forecast for next 5 days
+							const forecastEls = document.querySelectorAll(".forecast");
+							for (i = 0; i < forecastEls.length; i++) {
+								forecastEls[i].innerHTML = "";
+								const forecastIndex = i * 8 + 4;
+								const forecastDate = new Date(response.data.list[forecastIndex].dt * 1000);
+								const forecastDay = forecastDate.getDate();
+								const forecastMonth = forecastDate.getMonth() + 1;
+								const forecastYear = forecastDate.getFullYear();
+								const forecastDateEl = document.createElement("p");
+								forecastDateEl.setAttribute("class", "mt-3 mb-0 forecast-date");
+								forecastDateEl.innerHTML = forecastMonth + "/" + forecastDay + "/" + forecastYear;
+								forecastEls[i].append(forecastDateEl);
 
+								// Icon for current weather
 
+							}
+						})
 			});
 	}
 
@@ -75,7 +97,11 @@ function begin() {
 	})
 
 	// Clear History button
-
+	clearEl.addEventListener("click", function () {
+		localStorage.clear();
+		searchHistory = [];
+		renderSearchHistory();
+	})
 
 	function k2f(K) {
 		return Math.floor((K - 273.15) * 1.8 + 32);
@@ -96,6 +122,11 @@ function begin() {
 		}
 	}
 
+	renderSearchHistory();
+	if (searchHistory.length > 0) {
+		getWeather(searchHistory[searchHistory.length - 1]);
+	}
+	
 }
 
 begin();
