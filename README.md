@@ -7,3 +7,5 @@
 # search history will be saved in local storage
 # this weather daskboard app is mobile compatible
 
+<img width="1440" alt="weather-dashboard ss" src="https://user-images.githubusercontent.com/80074766/116838607-8df3b280-ab94-11eb-930a-02aabbc9959f.png">
+
